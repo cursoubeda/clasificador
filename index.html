@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificador de Vehículos - AI Vision</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: #e74c3c;
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-upload {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .webcam-section {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        #webcam-container, #image-container {
+            display: inline-block;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        #webcam-container canvas, #image-container img {
+            display: block;
+            border-radius: 15px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        #image-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        #image-container img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .status.loading {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .status.active {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+        }
+
+        .status.error {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .predictions {
+            margin-top: 30px;
+        }
+
+        .predictions h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .prediction-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .prediction-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .prediction-label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .prediction-confidence {
+            font-weight: 700;
+            font-size: 1.2em;
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+            min-width: 60px;
+        }
+
+        .high-confidence {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+        }
+
+        .medium-confidence {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+        }
+
+        .low-confidence {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .info-panel {
+            background: #e8f4fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .info-panel h4 {
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+
+        .info-panel p {
+            color: #34495e;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Clasificador de Vehículos</h1>
+        <p class="subtitle">Inteligencia Artificial para reconocimiento de coches y motos</p>
+        
+        <div class="controls">
+            <button id="startBtn" class="btn-primary" onclick="init()">
+                <span id="startText">🚀 Iniciar Clasificación</span>
+            </button>
+            <button id="stopBtn" class="btn-secondary" onclick="stop()" style="display: none;">
+                🛑 Detener Cámara
+            </button>
+            <button id="uploadBtn" class="btn-upload" onclick="triggerFileUpload()">
+                📸 Subir Foto
+            </button>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+        </div>
+
+        <div id="status" class="status" style="display: none;"></div>
+
+        <div class="webcam-section">
+            <div id="webcam-container"></div>
+            <div id="image-container" style="display: none;"></div>
+        </div>
+
+        <div id="predictions" class="predictions" style="display: none;">
+            <h3>📊 Predicciones en Tiempo Real</h3>
+            <div id="label-container"></div>
+        </div>
+
+        <div class="info-panel">
+            <h4>ℹ️ Información</h4>
+            <p>Este clasificador utiliza inteligencia artificial para detectar y clasificar vehículos en tiempo real a través de la cámara web o mediante imágenes subidas desde tu dispositivo. 
+            Asegúrate de tener buena iluminación y posiciona los vehículos claramente para obtener mejores resultados.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        const URL = "./my_model/";
+        let model, webcam, labelContainer, maxPredictions;
+        let isRunning = false;
+        let currentMode = 'webcam'; // 'webcam' o 'image'
+
+        // Referencias a elementos del DOM
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const status = document.getElementById('status');
+        const predictions = document.getElementById('predictions');
+        const startText = document.getElementById('startText');
+        const imageContainer = document.getElementById('image-container');
+        const webcamContainer = document.getElementById('webcam-container');
+
+        function showStatus(message, type = 'loading') {
+            status.style.display = 'block';
+            status.className = `status ${type}`;
+            
+            if (type === 'loading') {
+                status.innerHTML = `<div class="loading-spinner"></div>${message}`;
+            } else {
+                status.innerHTML = message;
+            }
+        }
+
+        function hideStatus() {
+            status.style.display = 'none';
+        }
+
+        async function init() {
+            if (isRunning) return;
+
+            try {
+                // Actualizar UI
+                startBtn.disabled = true;
+                showStatus('🔄 Cargando modelo de IA...', 'loading');
+
+                // Cargar modelo
+                const modelURL = URL + "model.json";
+                const metadataURL = URL + "metadata.json";
+
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+
+                showStatus('📷 Iniciando cámara...', 'loading');
+
+                // Configurar webcam
+                const flip = true;
+                webcam = new tmImage.Webcam(300, 300, flip);
+                await webcam.setup();
+                await webcam.play();
+
+                // Mostrar webcam y ocultar imagen
+                webcamContainer.style.display = 'block';
+                imageContainer.style.display = 'none';
+
+                // Actualizar UI
+                webcamContainer.appendChild(webcam.canvas);
+                setupPredictionContainer();
+                
+                // Iniciar loop de predicción
+                isRunning = true;
+                loop();
+
+                // Actualizar controles
+                startBtn.style.display = 'none';
+                stopBtn.style.display = 'inline-block';
+                stopBtn.textContent = '🛑 Detener Cámara';
+                predictions.style.display = 'block';
+                showStatus('✅ Clasificación activa - Apunta la cámara hacia un vehículo', 'active');
+
+            } catch (error) {
+                console.error('Error al inicializar:', error);
+                showStatus('❌ Error al cargar el modelo. Verifica que los archivos del modelo estén disponibles.', 'error');
+                startBtn.disabled = false;
+            }
+        }
+
+        function setupPredictionContainer() {
+            labelContainer = document.getElementById("label-container");
+            labelContainer.innerHTML = "";
+            
+            for (let i = 0; i < maxPredictions; i++) {
+                const predictionItem = document.createElement("div");
+                predictionItem.className = "prediction-item";
+                predictionItem.innerHTML = `
+                    <span class="prediction-label"></span>
+                    <div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="prediction-confidence low-confidence">0%</span>
+                    </div>
+                `;
+                labelContainer.appendChild(predictionItem);
+            }
+        }
+
+        async function loop() {
+            if (!isRunning) return;
+            
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            try {
+                const prediction = await model.predict(webcam.canvas);
+                
+                for (let i = 0; i < maxPredictions; i++) {
+                    const confidence = prediction[i].probability * 100;
+                    const predictionItem = labelContainer.children[i];
+                    const label = predictionItem.querySelector('.prediction-label');
+                    const progressFill = predictionItem.querySelector('.progress-fill');
+                    const confidenceSpan = predictionItem.querySelector('.prediction-confidence');
+                    
+                    // Actualizar contenido
+                    label.textContent = prediction[i].className;
+                    progressFill.style.width = `${confidence}%`;
+                    confidenceSpan.textContent = `${confidence.toFixed(1)}%`;
+                    
+                    // Actualizar estilos según confianza
+                    confidenceSpan.className = 'prediction-confidence ' + getConfidenceClass(confidence);
+                    
+                    // Highlight para predicción más alta
+                    if (confidence > 50) {
+                        predictionItem.style.borderLeftColor = '#27ae60';
+                        predictionItem.style.backgroundColor = '#f8fff9';
+                    } else {
+                        predictionItem.style.borderLeftColor = '#667eea';
+                        predictionItem.style.backgroundColor = '#f8f9fa';
+                    }
+                }
+            } catch (error) {
+                console.error('Error en predicción:', error);
+            }
+        }
+
+        function getConfidenceClass(confidence) {
+            if (confidence >= 70) return 'high-confidence';
+            if (confidence >= 40) return 'medium-confidence';
+            return 'low-confidence';
+        }
+
+        function stop() {
+            if (!isRunning) return;
+            
+            isRunning = false;
+            
+            if (webcam) {
+                webcam.stop();
+                webcamContainer.innerHTML = '';
+            }
+            
+            // Ocultar contenedores
+            imageContainer.style.display = 'none';
+            imageContainer.innerHTML = '';
+            
+            // Resetear UI
+            startBtn.style.display = 'inline-block';
+            startBtn.disabled = false;
+            stopBtn.style.display = 'none';
+            predictions.style.display = 'none';
+            hideStatus();
+            currentMode = 'webcam';
+        }
+
+        // Funciones para manejo de imágenes
+        function triggerFileUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validar tipo de archivo
+            if (!file.type.startsWith('image/')) {
+                showStatus('❌ Por favor selecciona un archivo de imagen válido', 'error');
+                return;
+            }
+
+            // Validar tamaño (máximo 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showStatus('❌ La imagen es demasiado grande. Máximo 10MB', 'error');
+                return;
+            }
+
+            try {
+                // Cargar modelo si no está cargado
+                if (!model) {
+                    showStatus('🔄 Cargando modelo de IA...', 'loading');
+                    const modelURL = URL + "model.json";
+                    const metadataURL = URL + "metadata.json";
+                    model = await tmImage.load(modelURL, metadataURL);
+                    maxPredictions = model.getTotalClasses();
+                }
+
+                showStatus('📸 Procesando imagen...', 'loading');
+
+                // Crear elemento de imagen
+                const img = new Image();
+                img.onload = async function() {
+                    try {
+                        // Mostrar imagen
+                        displayUploadedImage(img);
+                        
+                        // Realizar predicción
+                        await predictImage(img);
+                        
+                        showStatus('✅ Imagen analizada correctamente', 'active');
+                    } catch (error) {
+                        console.error('Error en onload:', error);
+                        showStatus('❌ Error al analizar la imagen', 'error');
+                    }
+                };
+
+                img.onerror = function() {
+                    console.error('Error al cargar la imagen');
+                    showStatus('❌ Error al cargar la imagen', 'error');
+                };
+
+                // Usar FileReader en lugar de URL.createObjectURL para mejor compatibilidad
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                };
+                reader.onerror = function() {
+                    console.error('Error al leer el archivo');
+                    showStatus('❌ Error al leer el archivo', 'error');
+                };
+                reader.readAsDataURL(file);
+                currentMode = 'image';
+
+            } catch (error) {
+                console.error('Error al procesar imagen:', error);
+                showStatus('❌ Error al procesar la imagen. Detalles: ' + error.message, 'error');
+            }
+        }
+
+        function displayUploadedImage(img) {
+            // Ocultar webcam y mostrar contenedor de imagen
+            webcamContainer.style.display = 'none';
+            imageContainer.style.display = 'block';
+            
+            // Crear elemento de imagen para mostrar
+            const displayImg = img.cloneNode();
+            displayImg.style.maxWidth = '400px';
+            displayImg.style.maxHeight = '400px';
+            displayImg.style.objectFit = 'contain';
+            
+            imageContainer.innerHTML = '';
+            imageContainer.appendChild(displayImg);
+            
+            // Mostrar predicciones
+            setupPredictionContainer();
+            predictions.style.display = 'block';
+            
+            // Actualizar controles
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
+            stopBtn.textContent = '🗑️ Limpiar';
+        }
+
+        async function predictImage(img) {
+            try {
+                console.log('Iniciando predicción de imagen...');
+                
+                // Crear canvas temporal para la predicción
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                if (!ctx) {
+                    throw new Error('No se pudo crear el contexto del canvas');
+                }
+                
+                // Redimensionar imagen para el modelo (300x300)
+                canvas.width = 300;
+                canvas.height = 300;
+                
+                // Limpiar canvas y dibujar imagen
+                ctx.clearRect(0, 0, 300, 300);
+                ctx.drawImage(img, 0, 0, 300, 300);
+                
+                console.log('Canvas preparado, realizando predicción...');
+                
+                // Realizar predicción
+                const prediction = await model.predict(canvas);
+                console.log('Predicción completada:', prediction);
+                
+                // Actualizar UI con predicciones
+                for (let i = 0; i < maxPredictions; i++) {
+                    const confidence = prediction[i].probability * 100;
+                    const predictionItem = labelContainer.children[i];
+                    
+                    if (!predictionItem) {
+                        console.error('No se encontró el elemento de predicción:', i);
+                        continue;
+                    }
+                    
+                    const label = predictionItem.querySelector('.prediction-label');
+                    const progressFill = predictionItem.querySelector('.progress-fill');
+                    const confidenceSpan = predictionItem.querySelector('.prediction-confidence');
+                    
+                    if (label && progressFill && confidenceSpan) {
+                        // Actualizar contenido
+                        label.textContent = prediction[i].className;
+                        progressFill.style.width = `${confidence}%`;
+                        confidenceSpan.textContent = `${confidence.toFixed(1)}%`;
+                        
+                        // Actualizar estilos según confianza
+                        confidenceSpan.className = 'prediction-confidence ' + getConfidenceClass(confidence);
+                        
+                        // Highlight para predicción más alta
+                        if (confidence > 50) {
+                            predictionItem.style.borderLeftColor = '#27ae60';
+                            predictionItem.style.backgroundColor = '#f8fff9';
+                        } else {
+                            predictionItem.style.borderLeftColor = '#667eea';
+                            predictionItem.style.backgroundColor = '#f8f9fa';
+                        }
+                    }
+                }
+                
+                console.log('Predicción UI actualizada correctamente');
+                
+            } catch (error) {
+                console.error('Error detallado en predicción de imagen:', error);
+                showStatus('❌ Error al analizar la imagen: ' + error.message, 'error');
+                throw error; // Re-lanzar para que se capture arriba
+            }
+        }
+
+        // Manejo de errores globales
+        window.addEventListener('error', function(e) {
+            console.error('Error global:', e.error);
+            showStatus('❌ Ha ocurrido un error inesperado', 'error');
+        });
+
+        // Cleanup al cerrar la página
+        window.addEventListener('beforeunload', function() {
+            if (webcam && isRunning) {
+                webcam.stop();
+            }
+        });
+    </script>
+</body>
+</html>
