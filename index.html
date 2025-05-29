@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clasificador de Cervezas - AI Vision</title>
+    <title>Clasificador de Cerveza - AI Vision</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f4a261 0%, #e76f51 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -38,7 +38,7 @@
             margin-bottom: 10px;
             font-size: 2.5em;
             font-weight: 700;
-            background: linear-gradient(45deg, #f4a261, #e76f51);
+            background: linear-gradient(45deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -71,14 +71,14 @@
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #f4a261, #e76f51);
+            background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
-            box-shadow: 0 4px 15px rgba(244, 162, 97, 0.4);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(244, 162, 97, 0.6);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
         .btn-secondary {
@@ -88,14 +88,14 @@
         }
 
         .btn-upload {
-            background: linear-gradient(45deg, #2a9d8f, #264653);
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
             color: white;
-            box-shadow: 0 4px 15px rgba(42, 157, 143, 0.4);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
         }
 
         .btn-upload:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(42, 157, 143, 0.6);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
         }
 
         button:disabled {
@@ -150,7 +150,7 @@
         }
 
         .status.active {
-            background: linear-gradient(45deg, #2a9d8f, #264653);
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
             color: white;
         }
 
@@ -183,7 +183,7 @@
             padding: 15px;
             background: #f8f9fa;
             border-radius: 10px;
-            border-left: 4px solid #f4a261;
+            border-left: 4px solid #667eea;
             transition: all 0.3s ease;
         }
 
@@ -208,7 +208,7 @@
         }
 
         .high-confidence {
-            background: linear-gradient(45deg, #2a9d8f, #264653);
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
         }
 
         .medium-confidence {
@@ -230,17 +230,17 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(45deg, #f4a261, #e76f51);
+            background: linear-gradient(45deg, #667eea, #764ba2);
             border-radius: 4px;
             transition: width 0.3s ease;
         }
 
         .main-result {
-            background: linear-gradient(135deg, #2a9d8f 0%, #264653 100%);
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
             border-radius: 20px;
             padding: 25px;
             margin: 20px 0 30px 0;
-            box-shadow: 0 15px 35px rgba(42, 157, 143, 0.3);
+            box-shadow: 0 15px 35px rgba(46, 204, 113, 0.3);
             transform: scale(1.02);
             animation: resultPulse 0.6s ease-out;
         }
@@ -383,13 +383,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>🍺 Clasificador de Cervezas</h1>
+        <h1>🚗 Clasificador de Cervezas</h1>
         <p class="subtitle">Inteligencia Artificial para reconocimiento de Cervezas</p>
         
         <!-- Resultado Principal -->
         <div id="main-result" class="main-result" style="display: none;">
             <div class="result-content">
-                <div class="result-icon">🍻</div>
+                <div class="result-icon">🍺</div>
                 <div class="result-text">
                     <div class="result-label" id="result-label">BUENA</div>
                     <div class="result-confidence" id="result-confidence">95.2%</div>
@@ -399,13 +399,13 @@
 
         <div class="controls">
             <button id="startBtn" class="btn-primary" onclick="init()">
-                <span id="startText">🍺 Iniciar Clasificación</span>
+                <span id="startText">🚀 Iniciar Clasificación</span>
             </button>
             <button id="stopBtn" class="btn-secondary" onclick="handleStop()" style="display: none;">
-                🚫 Detener Cámara
+                🛑 Detener Cámara
             </button>
             <button id="uploadBtn" class="btn-upload" onclick="triggerFileUpload()">
-                📱 Subir Foto
+                📸 Subir Foto
             </button>
             <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
         </div>
@@ -418,13 +418,13 @@
         </div>
 
         <div id="predictions" class="predictions" style="display: none;">
-            <h3>🍻 Predicciones en Tiempo Real</h3>
+            <h3>📊 Predicciones en Tiempo Real</h3>
             <div id="label-container"></div>
         </div>
 
         <div class="info-panel">
-            <h4>🍺 Información</h4>
-            <p>Este clasificador utiliza inteligencia artificial para detectar y clasificar la calidad de las cervezas</p>
+            <h4>ℹ️ Información</h4>
+            <p>Este clasificador utiliza inteligencia artificial para detectar y clasificar la mejor cerveza</p>
         </div>
     </div>
 
@@ -504,9 +504,9 @@
                 // Actualizar controles
                 startBtn.style.display = 'none';
                 stopBtn.style.display = 'inline-block';
-                stopBtn.textContent = '🚫 Detener Cámara';
+                stopBtn.textContent = '🛑 Detener Cámara';
                 predictions.style.display = 'block';
-                showStatus('✅ Clasificación activa - Apunta la cámara hacia una cerveza', 'active');
+                showStatus('✅ Clasificación activa - Apunta la cámara hacia un vehículo', 'active');
 
             } catch (error) {
                 console.error('Error al inicializar:', error);
@@ -575,10 +575,10 @@
                     
                     // Highlight para predicción más alta
                     if (confidence > 50) {
-                        predictionItem.style.borderLeftColor = '#2a9d8f';
-                        predictionItem.style.backgroundColor = '#f0fdf4';
+                        predictionItem.style.borderLeftColor = '#27ae60';
+                        predictionItem.style.backgroundColor = '#f8fff9';
                     } else {
-                        predictionItem.style.borderLeftColor = '#f4a261';
+                        predictionItem.style.borderLeftColor = '#667eea';
                         predictionItem.style.backgroundColor = '#f8f9fa';
                     }
                 }
@@ -677,7 +677,7 @@
                     maxPredictions = model.getTotalClasses();
                 }
 
-                showStatus('📱 Procesando imagen...', 'loading');
+                showStatus('📸 Procesando imagen...', 'loading');
 
                 // Crear elemento de imagen
                 const img = new Image();
@@ -812,10 +812,10 @@
                         
                         // Highlight para predicción más alta
                         if (confidence > 50) {
-                            predictionItem.style.borderLeftColor = '#2a9d8f';
-                            predictionItem.style.backgroundColor = '#f0fdf4';
+                            predictionItem.style.borderLeftColor = '#27ae60';
+                            predictionItem.style.backgroundColor = '#f8fff9';
                         } else {
-                            predictionItem.style.borderLeftColor = '#f4a261';
+                            predictionItem.style.borderLeftColor = '#667eea';
                             predictionItem.style.backgroundColor = '#f8f9fa';
                         }
                     }
