@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clasificador de Vehículos - AI Vision</title>
+    <title>Clasificador de Cervezas - AI Vision</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f4a261 0%, #e76f51 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -38,7 +38,7 @@
             margin-bottom: 10px;
             font-size: 2.5em;
             font-weight: 700;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #f4a261, #e76f51);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -71,14 +71,14 @@
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #f4a261, #e76f51);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(244, 162, 97, 0.4);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 20px rgba(244, 162, 97, 0.6);
         }
 
         .btn-secondary {
@@ -88,14 +88,14 @@
         }
 
         .btn-upload {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            background: linear-gradient(45deg, #2a9d8f, #264653);
             color: white;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+            box-shadow: 0 4px 15px rgba(42, 157, 143, 0.4);
         }
 
         .btn-upload:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
+            box-shadow: 0 6px 20px rgba(42, 157, 143, 0.6);
         }
 
         button:disabled {
@@ -150,7 +150,7 @@
         }
 
         .status.active {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            background: linear-gradient(45deg, #2a9d8f, #264653);
             color: white;
         }
 
@@ -183,7 +183,7 @@
             padding: 15px;
             background: #f8f9fa;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #f4a261;
             transition: all 0.3s ease;
         }
 
@@ -208,7 +208,7 @@
         }
 
         .high-confidence {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            background: linear-gradient(45deg, #2a9d8f, #264653);
         }
 
         .medium-confidence {
@@ -230,17 +230,87 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #f4a261, #e76f51);
             border-radius: 4px;
             transition: width 0.3s ease;
         }
 
-        .info-panel {
-            background: #e8f4fd;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            border-left: 4px solid #3498db;
+        .main-result {
+            background: linear-gradient(135deg, #2a9d8f 0%, #264653 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0 30px 0;
+            box-shadow: 0 15px 35px rgba(42, 157, 143, 0.3);
+            transform: scale(1.02);
+            animation: resultPulse 0.6s ease-out;
+        }
+
+        .main-result.veneno {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.3);
+        }
+
+        .result-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .result-icon {
+            font-size: 3em;
+            animation: iconBounce 0.8s ease-out;
+        }
+
+        .result-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .result-label {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .result-confidence {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes resultPulse {
+            0% { 
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% { 
+                transform: scale(1.02);
+                opacity: 1;
+            }
+        }
+
+        @keyframes iconBounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
         }
 
         .info-panel h4 {
@@ -253,6 +323,14 @@
             line-height: 1.5;
         }
 
+        .info-panel {
+            background: #e8f4fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -261,6 +339,19 @@
             
             h1 {
                 font-size: 2em;
+            }
+            
+            .result-label {
+                font-size: 2em;
+            }
+            
+            .result-icon {
+                font-size: 2.5em;
+            }
+            
+            .result-content {
+                flex-direction: column;
+                gap: 10px;
             }
             
             .controls {
@@ -292,18 +383,29 @@
 </head>
 <body>
     <div class="container">
-        <h1>🚗 Clasificador de Vehículos</h1>
-        <p class="subtitle">Inteligencia Artificial para reconocimiento de coches y motos</p>
+        <h1>🍺 Clasificador de Cervezas</h1>
+        <p class="subtitle">Inteligencia Artificial para reconocimiento de Cervezas</p>
         
+        <!-- Resultado Principal -->
+        <div id="main-result" class="main-result" style="display: none;">
+            <div class="result-content">
+                <div class="result-icon">🍻</div>
+                <div class="result-text">
+                    <div class="result-label" id="result-label">BUENA</div>
+                    <div class="result-confidence" id="result-confidence">95.2%</div>
+                </div>
+            </div>
+        </div>
+
         <div class="controls">
             <button id="startBtn" class="btn-primary" onclick="init()">
-                <span id="startText">🚀 Iniciar Clasificación</span>
+                <span id="startText">🍺 Iniciar Clasificación</span>
             </button>
-            <button id="stopBtn" class="btn-secondary" onclick="stop()" style="display: none;">
-                🛑 Detener Cámara
+            <button id="stopBtn" class="btn-secondary" onclick="handleStop()" style="display: none;">
+                🚫 Detener Cámara
             </button>
             <button id="uploadBtn" class="btn-upload" onclick="triggerFileUpload()">
-                📸 Subir Foto
+                📱 Subir Foto
             </button>
             <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
         </div>
@@ -316,14 +418,13 @@
         </div>
 
         <div id="predictions" class="predictions" style="display: none;">
-            <h3>📊 Predicciones en Tiempo Real</h3>
+            <h3>🍻 Predicciones en Tiempo Real</h3>
             <div id="label-container"></div>
         </div>
 
         <div class="info-panel">
-            <h4>ℹ️ Información</h4>
-            <p>Este clasificador utiliza inteligencia artificial para detectar y clasificar vehículos en tiempo real a través de la cámara web o mediante imágenes subidas desde tu dispositivo. 
-            Asegúrate de tener buena iluminación y posiciona los vehículos claramente para obtener mejores resultados.</p>
+            <h4>🍺 Información</h4>
+            <p>Este clasificador utiliza inteligencia artificial para detectar y clasificar la calidad de las cervezas</p>
         </div>
     </div>
 
@@ -344,6 +445,10 @@
         const startText = document.getElementById('startText');
         const imageContainer = document.getElementById('image-container');
         const webcamContainer = document.getElementById('webcam-container');
+        const fileInput = document.getElementById('fileInput');
+        const mainResult = document.getElementById('main-result');
+        const resultLabel = document.getElementById('result-label');
+        const resultConfidence = document.getElementById('result-confidence');
 
         function showStatus(message, type = 'loading') {
             status.style.display = 'block';
@@ -393,14 +498,15 @@
                 
                 // Iniciar loop de predicción
                 isRunning = true;
+                currentMode = 'webcam';
                 loop();
 
                 // Actualizar controles
                 startBtn.style.display = 'none';
                 stopBtn.style.display = 'inline-block';
-                stopBtn.textContent = '🛑 Detener Cámara';
+                stopBtn.textContent = '🚫 Detener Cámara';
                 predictions.style.display = 'block';
-                showStatus('✅ Clasificación activa - Apunta la cámara hacia un vehículo', 'active');
+                showStatus('✅ Clasificación activa - Apunta la cámara hacia una cerveza', 'active');
 
             } catch (error) {
                 console.error('Error al inicializar:', error);
@@ -430,7 +536,7 @@
         }
 
         async function loop() {
-            if (!isRunning) return;
+            if (!isRunning || currentMode !== 'webcam') return;
             
             webcam.update();
             await predict();
@@ -440,6 +546,17 @@
         async function predict() {
             try {
                 const prediction = await model.predict(webcam.canvas);
+                
+                // Encontrar la predicción con mayor confianza
+                let maxPrediction = prediction[0];
+                for (let i = 1; i < prediction.length; i++) {
+                    if (prediction[i].probability > maxPrediction.probability) {
+                        maxPrediction = prediction[i];
+                    }
+                }
+                
+                // Actualizar resultado principal
+                updateMainResult(maxPrediction);
                 
                 for (let i = 0; i < maxPredictions; i++) {
                     const confidence = prediction[i].probability * 100;
@@ -458,10 +575,10 @@
                     
                     // Highlight para predicción más alta
                     if (confidence > 50) {
-                        predictionItem.style.borderLeftColor = '#27ae60';
-                        predictionItem.style.backgroundColor = '#f8fff9';
+                        predictionItem.style.borderLeftColor = '#2a9d8f';
+                        predictionItem.style.backgroundColor = '#f0fdf4';
                     } else {
-                        predictionItem.style.borderLeftColor = '#667eea';
+                        predictionItem.style.borderLeftColor = '#f4a261';
                         predictionItem.style.backgroundColor = '#f8f9fa';
                     }
                 }
@@ -476,7 +593,16 @@
             return 'low-confidence';
         }
 
-        function stop() {
+        // Nueva función para manejar ambos casos: detener cámara y limpiar imagen
+        function handleStop() {
+            if (currentMode === 'webcam') {
+                stopWebcam();
+            } else if (currentMode === 'image') {
+                clearImage();
+            }
+        }
+
+        function stopWebcam() {
             if (!isRunning) return;
             
             isRunning = false;
@@ -486,9 +612,25 @@
                 webcamContainer.innerHTML = '';
             }
             
-            // Ocultar contenedores
+            resetUI();
+        }
+
+        function clearImage() {
+            // Limpiar contenedor de imagen
             imageContainer.style.display = 'none';
             imageContainer.innerHTML = '';
+            
+            // Limpiar input de archivo
+            fileInput.value = '';
+            
+            resetUI();
+        }
+
+        function resetUI() {
+            // Ocultar contenedores
+            webcamContainer.style.display = 'none';
+            imageContainer.style.display = 'none';
+            mainResult.style.display = 'none';
             
             // Resetear UI
             startBtn.style.display = 'inline-block';
@@ -501,7 +643,7 @@
 
         // Funciones para manejo de imágenes
         function triggerFileUpload() {
-            document.getElementById('fileInput').click();
+            fileInput.click();
         }
 
         async function handleImageUpload(event) {
@@ -521,6 +663,11 @@
             }
 
             try {
+                // Detener webcam si está activa
+                if (isRunning && currentMode === 'webcam') {
+                    stopWebcam();
+                }
+
                 // Cargar modelo si no está cargado
                 if (!model) {
                     showStatus('🔄 Cargando modelo de IA...', 'loading');
@@ -530,7 +677,7 @@
                     maxPredictions = model.getTotalClasses();
                 }
 
-                showStatus('📸 Procesando imagen...', 'loading');
+                showStatus('📱 Procesando imagen...', 'loading');
 
                 // Crear elemento de imagen
                 const img = new Image();
@@ -564,6 +711,8 @@
                     showStatus('❌ Error al leer el archivo', 'error');
                 };
                 reader.readAsDataURL(file);
+                
+                // Cambiar a modo imagen
                 currentMode = 'image';
 
             } catch (error) {
@@ -594,6 +743,10 @@
             startBtn.style.display = 'none';
             stopBtn.style.display = 'inline-block';
             stopBtn.textContent = '🗑️ Limpiar';
+            
+            // Asegurarse de que estamos en modo imagen
+            isRunning = false; // No necesitamos el loop para imágenes
+            currentMode = 'image';
         }
 
         async function predictImage(img) {
@@ -623,6 +776,18 @@
                 console.log('Predicción completada:', prediction);
                 
                 // Actualizar UI con predicciones
+                // Encontrar la predicción con mayor confianza
+                let maxPrediction = prediction[0];
+                for (let i = 1; i < prediction.length; i++) {
+                    if (prediction[i].probability > maxPrediction.probability) {
+                        maxPrediction = prediction[i];
+                    }
+                }
+                
+                // Actualizar resultado principal
+                updateMainResult(maxPrediction);
+                
+                // Actualizar todas las predicciones
                 for (let i = 0; i < maxPredictions; i++) {
                     const confidence = prediction[i].probability * 100;
                     const predictionItem = labelContainer.children[i];
@@ -647,10 +812,10 @@
                         
                         // Highlight para predicción más alta
                         if (confidence > 50) {
-                            predictionItem.style.borderLeftColor = '#27ae60';
-                            predictionItem.style.backgroundColor = '#f8fff9';
+                            predictionItem.style.borderLeftColor = '#2a9d8f';
+                            predictionItem.style.backgroundColor = '#f0fdf4';
                         } else {
-                            predictionItem.style.borderLeftColor = '#667eea';
+                            predictionItem.style.borderLeftColor = '#f4a261';
                             predictionItem.style.backgroundColor = '#f8f9fa';
                         }
                     }
@@ -662,6 +827,30 @@
                 console.error('Error detallado en predicción de imagen:', error);
                 showStatus('❌ Error al analizar la imagen: ' + error.message, 'error');
                 throw error; // Re-lanzar para que se capture arriba
+            }
+        }
+
+        // Nueva función para actualizar el resultado principal
+        function updateMainResult(maxPrediction) {
+            const confidence = maxPrediction.probability * 100;
+            const className = maxPrediction.className.toUpperCase();
+            
+            // Solo mostrar si la confianza es mayor a 30%
+            if (confidence > 30) {
+                resultLabel.textContent = className;
+                resultConfidence.textContent = `${confidence.toFixed(1)}%`;
+                
+                // Cambiar colores según el resultado
+                mainResult.className = 'main-result';
+                if (className.includes('VENENO') || className.includes('MALA') || className.includes('BAD')) {
+                    mainResult.classList.add('veneno');
+                } else {
+                    mainResult.classList.remove('veneno');
+                }
+                
+                mainResult.style.display = 'block';
+            } else {
+                mainResult.style.display = 'none';
             }
         }
 
